@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Drag & Drop</title>
+<link rel=help href="http://www.w3.org/TR/html5/editing.html#dnd">
+<link rel=author title="Tangel Tang" href="mailto:tangel719@163.com">
+<script type="text/javascript" src="/resources/testharness.js"></script>
+<script type="text/javascript" src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<p>Test DnD DataTransfer APIs</p>
+<div  id="dragitem" draggable="true" data-value="1234567890!~@#$%^&*()_+=-`;: abcdefghijklmnopqrstyvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ">please drag this</div>
+<script type="text/javascript">
+  setup({explicit_done:true})
+  setup({explicit_timeout:true})
+  var internalDNDType = 'text/plain'; // set this to something specific to your site
+  var obj = document.getElementById("dragitem");
+  on_event(obj,"dragstart",function(event){
+	if (event.target instanceof HTMLElement) {
+      event.dataTransfer.setData(internalDNDType, event.target.dataset.value);
+	  //////////////////////////////
+	  test(function() {
+		assert_equals(event.dataTransfer.getData(internalDNDType), event.target.dataset.value, "data should be equal")
+	  }, "Test dataTransfer value of getData should be equals to data be setted");
+	  
+	  ////////////////////
+	  console.log(event.dataTransfer)
+	  var itemLength = event.dataTransfer.items.length;
+	  test(function() {
+		assert_equals(itemLength, 1, "data should be equal")
+	  }, "Test dataTransfer.items.length ");
+	  
+	  ////////////////////
+	  event.dataTransfer.items.add('<p>1111</p>',"text/html");
+	  itemLength = event.dataTransfer.items.length;
+	  test(function() {
+		assert_equals(itemLength, 2, "data should be equal")
+	  }, "After add data dataTransfer.items.length should  +1");
+	  
+	  
+	  ////////////////////
+	  var dataTransferItem = event.dataTransfer.items[0];
+	  test(function() {
+		assert_equals(dataTransferItem.kind, 'string', "data should be equal")
+	  }, "Test dataTransferItem.kind ");
+	  
+	  //////////////////
+	  test(function() {
+		assert_equals(dataTransferItem.type, internalDNDType, "data should be equal")
+	  }, "Test dataTransferItem.type ");
+	  
+
+	  ////////////////////
+	  dataTransferItem = event.dataTransfer.items[1];
+	  test(function() {
+		assert_equals(dataTransferItem.kind, 'string', "data should be equal")
+	  }, "Test dataTransferItem.kind after add a data");
+	  
+	  //////////////////
+	  test(function() {
+		assert_equals(dataTransferItem.type, 'text/html', "data should be equal")
+	  }, "Test dataTransferItem.type after add a data");
+	  
+	  ///////////////////////////
+	 // var valueOfGetAsString = "";
+	//  var t = async_test("Test dataTransferItem.getAsString ")
+	  
+
+	//  async_test(function(t) {
+	      
+	//	 dataTransferItem.getAsString = function(str) {
+	//		
+     //     t.step(function (){
+		//  alert(str);assert_equals(str, event.target.dataset.value, "data should be equal"); t.done();});
+		//};
+	  //}, "Simple async test");
+	
+	
+	  //dataTransferItem.getAsString(function(str){
+	  //alert()
+	//	t.step(function() {
+	//		assert_equals(str, event.target.dataset.value, "data should be equal")
+	//	});	
+	 // })
+	  //t.done();
+	  
+	  event.dataTransfer.clearData();
+	  //////////////////////
+	  test(function() {
+		assert_equals(event.dataTransfer.getData(internalDNDType),"", "data should be equal")
+	  }, "Test clearData value should be empty ");
+    } else {
+      event.preventDefault();
+    }
+	done()
+  });
+</script>

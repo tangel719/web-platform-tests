@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Drag & Drop</title>
+<link rel=help href="http://www.w3.org/TR/html5/editing.html#dnd">
+<link rel=author title="Tangel Tang" href="mailto:tangel719@163.com">
+<script type="text/javascript" src="./resources/testharness.js"></script>
+<script type="text/javascript" src="./resources/testharnessreport.js"></script>
+<div id="log"></div>
+<p>Test DnD DataTransfer APIs</p>
+<ol id="dragitem" ondragstart="dragStartHandler(event)" style="border:1px solid green; width:150px;height:100px;margin-bottom:10px" draggable="true" data-value="1234567890!~@#$%^&*()_+=-`;: abcdefghijklmnopqrstyvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ">please drag this</ol>
+<ol  id="dropitem" style="border:1px solid green;width:150px;height:100px">please drop here(please do drag out one time)</ol>
+<script type="text/javascript">
+  var over = false, enter = false, drag = false;
+  setup({explicit_done:true})
+  setup({explicit_timeout:true})
+  var internalDNDTypeText = 'text', internalDNDTypeTextURL = 'url';
+  var dropitem = document.getElementById("dropitem");
+  var dragitem = document.getElementById("dragitem");
+  function dragStartHandler(event) {
+    if (event.target instanceof HTMLElement) {
+      event.dataTransfer.setData(internalDNDTypeText, event.target.dataset.value);
+      event.dataTransfer.effectAllowed = 'move'; // only allow moves
+    } else {
+      event.preventDefault(); // don't allow selection to be dragged
+    }
+  }
+
+  
+   on_event(dropitem,"drop",function(event){
+	if (event.preventDefault) {
+		event.preventDefault(); 
+	}
+  });
+  
+  
+  
+  on_event(dropitem,"dragover",function(event){
+	if (event.preventDefault) {
+			event.preventDefault(); 
+	}
+	if(over) return;
+	event.dataTransfer.dropEffect = 'move';
+	over = true;
+  });
+   
+  on_event(dropitem,"dragenter",function(event){
+    if(enter) return;
+	enter = true;
+	if (event.target instanceof HTMLElement) {
+       //////////////////
+	  test(function() {
+		assert_equals(event.target.id,"dropitem","event.target.id not equal to dragitem"
+		)
+	  }, "Test dragenter event.target should be the Immediate user selection or the body element");
+    
+	
+	//////////////////
+	  test(function() {
+		assert_not_equals(event.dataTransfer.getData(internalDNDTypeText),"1234567890!~@#$%^&*()_+=-`;: abcdefghijklmnopqrstyvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ","event.dataTransfer.getData(internalDNDTypeText) is changed"
+		)
+	  }, "Test dragenter event.dataTransfer.getData should in Protected mode");
+	
+	
+	  try {
+		  
+		var newData = +new Date + 'data'
+		event.dataTransfer.setData(internalDNDTypeText,newData);
+	  } catch(e){
+
+	  }
+	//////////////////
+	  test(function() {
+		assert_not_equals(event.dataTransfer.getData(internalDNDTypeText),newData,"event.dataTransfer.getData(internalDNDTypeText) is changed"
+		)
+	  }, "Test dragenter event.dataTransfer.setData should in Protected mode");
+	  
+	  //////////////////
+	  test(function() {
+		assert_equals(event.dataTransfer.dropEffect,"move","event.dataTransfer.getData(internalDNDTypeText) is changed"
+		)
+	  }, "Test dragenter event.dataTransfer.dropEffect should be Current drag operation");
+    } else {
+      event.preventDefault();
+    }
+	
+  });
+  
+    on_event(dragitem,"drag",function(event){
+	    if(drag) return;
+		drag = true;
+	if (event.target instanceof HTMLElement) {
+       //////////////////
+	  test(function() {
+		assert_equals(event.target.id,"dragitem","event.target.id not equal to dragitem"
+		)
+	  }, "Test drag event.target should be the Source node");
+    
+	
+	//////////////////
+	  test(function() {
+		assert_not_equals(event.dataTransfer.getData(internalDNDTypeText),"1234567890!~@#$%^&*()_+=-`;: abcdefghijklmnopqrstyvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ","event.dataTransfer.getData(internalDNDTypeText) is changed"
+		)
+	  }, "Test drag event.dataTransfer.getData should in Protected mode");
+	
+	
+	  try {
+		  
+		var newData = +new Date + 'data'
+		event.dataTransfer.setData(internalDNDTypeText,newData);
+	  } catch(e){
+
+	  }
+	//////////////////
+	  test(function() {
+		assert_not_equals(event.dataTransfer.getData(internalDNDTypeText),newData,"event.dataTransfer.getData(internalDNDTypeText) is changed"
+		)
+	  }, "Test drag event.dataTransfer.setData should in Protected mode");
+	  
+	  //////////////////
+	  test(function() {
+		assert_equals(event.dataTransfer.dropEffect,"none","event.dataTransfer.getData(internalDNDTypeText) is changed"
+		)
+	  }, "Test drag event.dataTransfer.dropEffect should be none");
+    } else {
+      event.preventDefault();
+    }
+
+  });
+  
+    on_event(dropitem,"dragleave",function(event){
+	if (event.target instanceof HTMLElement) {
+       //////////////////
+	  test(function() {
+		assert_equals(event.target.id,"dropitem","event.target.id not equal to dragitem"
+		)
+	  }, "Test dragleave event.target should be the Immediate user selection or the body element");
+    
+	
+	//////////////////
+	  test(function() {
+		assert_not_equals(event.dataTransfer.getData(internalDNDTypeText),"1234567890!~@#$%^&*()_+=-`;: abcdefghijklmnopqrstyvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ","event.dataTransfer.getData(internalDNDTypeText) is changed"
+		)
+	  }, "Test dragleave event.dataTransfer.getData should in Protected mode");
+	
+	
+	  try {
+		  
+		var newData = +new Date + 'data'
+		event.dataTransfer.setData(internalDNDTypeText,newData);
+	  } catch(e){
+
+	  }
+	//////////////////
+	  test(function() {
+		assert_not_equals(event.dataTransfer.getData(internalDNDTypeText),newData,"event.dataTransfer.getData(internalDNDTypeText) is changed"
+		)
+	  }, "Test dragleave event.dataTransfer.setData should in Protected mode");
+	  
+	  //////////////////
+	  test(function() {
+		assert_equals(event.dataTransfer.dropEffect,"none","event.dataTransfer.getData(internalDNDTypeText) is changed"
+		)
+	  }, "Test dragleave event.dataTransfer.dropEffect should be none");
+    } else {
+      event.preventDefault();
+    }
+
+  });
+  
+  
+  
+   on_event(dragitem,"dragend",function(event){
+	if (event.target instanceof HTMLElement) {
+	} else {
+      event.preventDefault();
+    }
+	done()
+  });
+	
+</script>
